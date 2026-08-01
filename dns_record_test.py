@@ -1,8 +1,8 @@
 import requests
 
 
-API_KEY = "你的KEY"
-API_SECRET = "你的SECRET"
+API_KEY = "cfsd_62683e55f9652467bb7567da9dfdfc19"
+API_SECRET = "5bee24c6300089f4ed00673eb823c4ccba072a52d56a95952ec5c904f36a9b5b"
 
 subdomain_id = 7007606429
 
