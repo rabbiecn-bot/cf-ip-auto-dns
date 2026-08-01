@@ -44,7 +44,7 @@ def update_dns(
 ):
 
 
-    url="DNSHE API地址"
+    url = "https://api005.dnshe.com/index.php?m=domain_hub&endpoint=dns_records&action=modify"
 
 
     data={
