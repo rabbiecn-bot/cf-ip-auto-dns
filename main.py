@@ -9,7 +9,7 @@ DNSHE_KEY=os.getenv(
 
 #你的CF优选IP网页
 
-URL="https://xxxx.com"
+URL="https://api.uouin.com/cloudflare.html"
 
 
 def get_ips():
