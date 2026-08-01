@@ -67,3 +67,152 @@ def fetch_html():
     
 
     return r.text
+    # =========================
+# 解析网页
+# =========================
+
+IP_REGEX = re.compile(
+    r"\b(?:\d{1,3}\.){3}\d{1,3}\b"
+)
+
+
+def parse_ip(html):
+
+    print("开始解析网页...")
+
+    soup = BeautifulSoup(html, "html.parser")
+
+    result = {
+        "电信": None,
+        "联通": None,
+        "移动": None
+    }
+
+    tables = soup.find_all("table")
+
+    for table in tables:
+
+        rows = table.find_all("tr")
+
+        for row in rows:
+
+            text = row.get_text(" ", strip=True)
+
+            ip_match = IP_REGEX.search(text)
+
+            if not ip_match:
+                continue
+
+            ip = ip_match.group()
+
+            if "电信" in text and result["电信"] is None:
+                result["电信"] = ip
+                print(f"找到电信IP：{ip}")
+
+            elif "联通" in text and result["联通"] is None:
+                result["联通"] = ip
+                print(f"找到联通IP：{ip}")
+
+            elif "移动" in text and result["移动"] is None:
+                result["移动"] = ip
+                print(f"找到移动IP：{ip}")
+
+            if all(result.values()):
+                break
+
+        if all(result.values()):
+            break
+
+    missing = []
+
+    for k, v in result.items():
+        if v is None:
+            missing.append(k)
+
+    if missing:
+        raise RuntimeError(
+            "没有解析到：" + ",".join(missing)
+        )
+
+    print()
+
+    print("解析完成：")
+
+    print(f"电信：{result['电信']}")
+    print(f"联通：{result['联通']}")
+    print(f"移动：{result['移动']}")
+
+    print()
+
+    return result
+    # =========================
+# 更新DNS
+# =========================
+
+def update_dns(record_info, ip):
+
+    print(f"更新 {record_info['name']} -> {ip}")
+
+    r = requests.post(
+        DNSHE_API + "&action=modify",
+        headers={
+            "X-API-Key": API_KEY,
+            "X-API-Secret": API_SECRET
+        },
+        json={
+            "id": record_info["id"],
+            "subdomain_id": SUBDOMAIN_ID,
+            "type": "A",
+            "name": record_info["name"],
+            "content": ip,
+            "ttl": 600
+        },
+        timeout=20
+    )
+
+    print("HTTP:", r.status_code)
+
+    try:
+        data = r.json()
+    except Exception:
+        print(r.text)
+        raise
+
+    print(data)
+
+    if not data.get("success", False):
+        raise RuntimeError(
+            f"{record_info['name']} 更新失败：{data}"
+        )
+
+    print(f"{record_info['name']} 更新成功\n")
+    # =========================
+# 主程序
+# =========================
+
+def main():
+
+    html = fetch_html()
+
+    result = parse_ip(html)
+
+    update_dns(
+        DNS_RECORDS["电信"],
+        result["电信"]
+    )
+
+    update_dns(
+        DNS_RECORDS["联通"],
+        result["联通"]
+    )
+
+    update_dns(
+        DNS_RECORDS["移动"],
+        result["移动"]
+    )
+
+    print("全部更新完成！")
+
+
+if __name__ == "__main__":
+    main()
