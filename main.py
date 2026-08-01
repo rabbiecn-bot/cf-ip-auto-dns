@@ -1,93 +1,69 @@
-import requests
 import os
+import re
+import requests
+from bs4 import BeautifulSoup
 
+# =========================
+# 配置
+# =========================
 
-DNSHE_KEY=os.getenv(
-    "DNSHE_KEY"
+SOURCE_URL = "https://api.uouin.com/cloudflare.html"
+
+DNSHE_API = (
+    "https://api005.dnshe.com/index.php"
+    "?m=domain_hub"
+    "&endpoint=dns_records"
 )
 
+API_KEY = os.environ["DNSHE_KEY"]
+API_SECRET = os.environ["DNSHE_SECRET"]
 
-#你的CF优选IP网页
+SUBDOMAIN_ID = 7007606429
 
-URL="https://api.uouin.com/cloudflare.html"
-
-
-def get_ips():
-
-    r=requests.get(URL)
-
-    text=r.text
-
-
-    import re
-
-
-    ips=re.findall(
-        r"\b(?:\d{1,3}\.){3}\d{1,3}\b",
-        text
-    )
-
-
-    return {
-
-        "ct":ips[0],
-        "cu":ips[1],
-        "cm":ips[2]
-
+DNS_RECORDS = {
+    "电信": {
+        "id": 617167586773195,
+        "name": "ct"
+    },
+    "联通": {
+        "id": 550278722553804,
+        "name": "cu"
+    },
+    "移动": {
+        "id": 662403211220243,
+        "name": "cm"
     }
+}
 
 
-
-def update_dns(
-    record,
-    ip
-):
-
-
-    url = "https://api005.dnshe.com/index.php?m=domain_hub&endpoint=dns_records&action=modify"
-
-
-    data={
-
-        "record":record,
-
-        "type":"A",
-
-        "value":ip
-
-    }
+HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 "
+        "(Windows NT 10.0; Win64; x64)"
+        " AppleWebKit/537.36 "
+        "(KHTML, like Gecko)"
+        " Chrome/138 Safari/537.36"
+    )
+}
 
 
-    r=requests.post(
+# =========================
+# 下载网页
+# =========================
 
-        url,
+def fetch_html():
 
-        headers={
-            "Authorization":
-            DNSHE_KEY
-        },
+    print("开始获取网页...")
 
-        json=data
-
+    r = requests.get(
+        SOURCE_URL,
+        headers=HEADERS,
+        timeout=20
     )
 
+    r.raise_for_status()
 
-    print(
-        record,
-        ip,
-        r.text
-    )
+    print("网页获取成功")
+    
 
-
-
-
-
-ips=get_ips()
-
-
-for record,ip in ips.items():
-
-    update_dns(
-        record,
-        ip
-    )
+    return r.text
