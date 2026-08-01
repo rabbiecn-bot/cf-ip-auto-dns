@@ -2,38 +2,29 @@ name: Update DNSHE CF IP
 
 on:
   schedule:
-    - cron: "0 * * * *"
-
-  workflow_dispatch:
-
+    - cron: "0 * * * *"   # 每小时执行一次
+  workflow_dispatch:       # 支持手动执行
 
 jobs:
-
   update:
-
     runs-on: ubuntu-latest
 
-
     steps:
+      - name: Checkout
+        uses: actions/checkout@v5
 
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
 
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    - name: Install Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.x"
-
-
-    - name: Install libs
-      run: |
-        pip install requests
-
-
-    - name: Run updater
-      env:
-        DNSHE_KEY: ${{ secrets.DNSHE_KEY }}
-
-      run:
-        python main.py
+      - name: Run updater
+        env:
+          DNSHE_KEY: ${{ secrets.DNSHE_KEY }}
+          DNSHE_SECRET: ${{ secrets.DNSHE_SECRET }}
+        run: python main.py
