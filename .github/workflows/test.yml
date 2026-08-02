@@ -28,4 +28,4 @@ jobs:
 
     - name: Run DNS record test
       run: |
-        python dns_record_test.py
+        python test.py
