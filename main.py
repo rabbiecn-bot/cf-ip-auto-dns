@@ -55,24 +55,28 @@ def fetch_html():
 
     print("开始获取网页...")
 
-with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True)
-    page = browser.new_page()
+    with sync_playwright() as p:
 
-    page.goto(
-        SOURCE_URL,
-        wait_until="networkidle",
-        timeout=60000
-    )
+        browser = p.chromium.launch(headless=True)
 
-    # 再等几秒，让页面完成更新
-    page.wait_for_timeout(3000)
+        page = browser.new_page()
 
-    html = page.content()
+        page.goto(
+            SOURCE_URL,
+            wait_until="networkidle",
+            timeout=60000
+        )
 
-    browser.close()
+        # 等待页面JS加载完成
+        page.wait_for_timeout(3000)
 
-return html
+        html = page.content()
+
+        browser.close()
+
+    print("网页获取成功")
+
+    return html
     # =========================
 # 解析网页
 # =========================
