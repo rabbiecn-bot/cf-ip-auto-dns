@@ -7,7 +7,7 @@ from playwright.sync_api import sync_playwright
 # 配置
 # =========================
 
-SOURCE_URL = "https://api.uouin.com/cloudflare.html"
+SOURCE_URL = "https://v2rayssr.com/cfip/"
 
 DNSHE_API = (
     "https://api005.dnshe.com/index.php"
