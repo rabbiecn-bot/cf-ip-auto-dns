@@ -2,7 +2,7 @@ import os
 import re
 import requests
 from bs4 import BeautifulSoup
-
+from playwright.sync_api import sync_playwright
 # =========================
 # 配置
 # =========================
@@ -55,18 +55,24 @@ def fetch_html():
 
     print("开始获取网页...")
 
-    r = requests.get(
+with sync_playwright() as p:
+    browser = p.chromium.launch(headless=True)
+    page = browser.new_page()
+
+    page.goto(
         SOURCE_URL,
-        headers=HEADERS,
-        timeout=20
+        wait_until="networkidle",
+        timeout=60000
     )
 
-    r.raise_for_status()
+    # 再等几秒，让页面完成更新
+    page.wait_for_timeout(3000)
 
-    print("网页获取成功")
-    
+    html = page.content()
 
-    return r.text
+    browser.close()
+
+return html
     # =========================
 # 解析网页
 # =========================
