@@ -134,15 +134,17 @@ def parse_ip(html):
             break
 
     missing = []
-
+    
     for k, v in result.items():
         if v is None:
             missing.append(k)
-
+    
     if missing:
-        raise RuntimeError(
-            "没有解析到：" + ",".join(missing)
+        print(
+            "⚠️ 以下运营商没有解析到："
+            + ",".join(missing)
         )
+
 
     print()
 
@@ -206,20 +208,20 @@ def main():
 
     result = parse_ip(html)
 
-    update_dns(
-        DNS_RECORDS["电信"],
-        result["电信"]
-    )
-
-    update_dns(
-        DNS_RECORDS["联通"],
-        result["联通"]
-    )
-
-    update_dns(
-        DNS_RECORDS["移动"],
-        result["移动"]
-    )
+    for isp, ip in result.items():
+    
+        if ip:
+    
+            update_dns(
+                DNS_RECORDS[isp],
+                ip
+            )
+    
+        else:
+    
+            print(
+                f"⏭️ 跳过 {isp}，没有解析到IP"
+            )
 
     print("全部更新完成！")
 
