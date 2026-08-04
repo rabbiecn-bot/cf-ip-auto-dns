@@ -17,6 +17,9 @@ DNSHE_API = (
 
 API_KEY = os.environ["DNSHE_KEY"]
 API_SECRET = os.environ["DNSHE_SECRET"]
+TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN")
+TG_CHAT_ID = os.environ.get("TG_CHAT_ID")
+TG_MESSAGE = []
 
 SUBDOMAIN_ID = 7007606429
 
@@ -45,7 +48,36 @@ HEADERS = {
         " Chrome/138 Safari/537.36"
     )
 }
+# =========================
+# Telegram通知
+# =========================
 
+def send_tg():
+
+    if not TG_BOT_TOKEN or not TG_CHAT_ID:
+        return
+
+    message = "\n".join(TG_MESSAGE)
+
+    url = (
+        f"https://api.telegram.org/"
+        f"bot{TG_BOT_TOKEN}/sendMessage"
+    )
+
+    data = {
+        "chat_id": TG_CHAT_ID,
+        "text": message
+    }
+
+    try:
+        requests.post(
+            url,
+            data=data,
+            timeout=10
+        )
+
+    except Exception as e:
+        print("TG发送失败:", e)
 
 # =========================
 # 下载网页
@@ -119,13 +151,25 @@ def parse_ip(html):
                 result["电信"] = ip
                 print(f"找到电信IP：{ip}")
 
+                TG_MESSAGE.append(
+                    f"📡 电信：{ip}"
+                )
+
             elif "联通" in text and result["联通"] is None:
                 result["联通"] = ip
                 print(f"找到联通IP：{ip}")
 
+                TG_MESSAGE.append(
+                    f"📡 联通：{ip}"
+                )
+
             elif "移动" in text and result["移动"] is None:
                 result["移动"] = ip
                 print(f"找到移动IP：{ip}")
+
+                TG_MESSAGE.append(
+                    f"📡 移动：{ip}"
+                )
 
             if all(result.values()):
                 break
@@ -140,10 +184,15 @@ def parse_ip(html):
             missing.append(k)
     
     if missing:
-        print(
-            "⚠️ 以下运营商没有解析到："
+
+        msg = (
+            "⚠️ 未解析到："
             + ",".join(missing)
         )
+    
+        print(msg)
+    
+        TG_MESSAGE.append(msg)
 
 
     print()
@@ -198,6 +247,11 @@ def update_dns(record_info, ip):
         )
 
     print(f"{record_info['name']} 更新成功\n")
+
+    TG_MESSAGE.append(
+        f"✅ {record_info['name']} 更新成功"
+    )
+    
     # =========================
 # 主程序
 # =========================
@@ -224,6 +278,13 @@ def main():
             )
 
     print("全部更新完成！")
+
+    TG_MESSAGE.insert(
+        0,
+        "🚀 电信、移动、联通DNS自动更新结果\n"
+    )
+    
+    send_tg()
 
 
 if __name__ == "__main__":
