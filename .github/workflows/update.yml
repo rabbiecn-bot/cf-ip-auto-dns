@@ -8,6 +8,11 @@ on:
 jobs:
   update:
     runs-on: ubuntu-latest
+    env:
+      DNSHE_KEY: ${{ secrets.DNSHE_KEY }}
+      DNSHE_SECRET: ${{ secrets.DNSHE_SECRET }}
+      TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+      TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
 
     steps:
       - name: Checkout
