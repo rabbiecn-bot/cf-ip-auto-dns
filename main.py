@@ -184,9 +184,7 @@ def parse_ip(html):
                     )
             
                     TG_MESSAGE.append(
-                        f"⚠️ 电信跳过\n"
-                        f"{ip}\n"
-                        f"带宽：{bw}Mbps"
+                        f"⚠️ 电信跳过,因带宽：{bw}Mbps<100M"
                     )
             
                     result["电信"] = "SKIP"
@@ -199,16 +197,13 @@ def parse_ip(html):
                     )
             
                     TG_MESSAGE.append(
-                        f"📡 电信：{ip}\n"
-                        f"🚀 带宽：{bw}Mbps"
+                        f"📡 电信：{ip}🚀 带宽：{bw}Mbps"
                     )
                 result["电信"] = ip
                 bandwidth["电信"] = bw
                 print(f"找到电信IP：{ip}")
 
-                TG_MESSAGE.append(
-                    f"📡 电信：{ip}🚀 带宽：{bw}Mbps"
-                )
+
             elif "联通" in text and result["联通"] is None:
 
                 if bw < 100:
@@ -218,9 +213,7 @@ def parse_ip(html):
                     )
             
                     TG_MESSAGE.append(
-                        f"⚠️ 联通跳过\n"
-                        f"{ip}\n"
-                        f"带宽：{bw}Mbps"
+                        f"⚠️ 联通跳过,因带宽：{bw}Mbps<100M"
                     )
             
                     result["联通"] = "SKIP"
@@ -233,17 +226,12 @@ def parse_ip(html):
                     )
             
                     TG_MESSAGE.append(
-                        f"📡 联通：{ip}\n"
-                        f"🚀 带宽：{bw}Mbps"
+                        f"📡 联通：{ip}🚀 带宽：{bw}Mbps"
                     )
             
                 result["联通"] = ip
                 bandwidth["联通"] = bw
                 print(f"找到联通IP：{ip}")
-
-                TG_MESSAGE.append(
-                    f"📡 联通：{ip}🚀 带宽：{bw}Mbps"
-                )
 
             elif "移动" in text and result["移动"] is None:
 
@@ -254,9 +242,7 @@ def parse_ip(html):
                     )
             
                     TG_MESSAGE.append(
-                        f"⚠️ 移动跳过\n"
-                        f"{ip}\n"
-                        f"带宽：{bw}Mbps"
+                        f"⚠️ 移动跳过,因带宽：{bw}Mbps<100M"
                     )
             
                     result["移动"] = "SKIP"
@@ -269,17 +255,12 @@ def parse_ip(html):
                     )
             
                     TG_MESSAGE.append(
-                        f"📡 移动：{ip}\n"
-                        f"🚀 带宽：{bw}Mbps"
+                        f"📡 移动：{ip}🚀 带宽：{bw}Mbps"
                     )
-            
+
                 result["移动"] = ip
                 bandwidth["移动"] = bw
                 print(f"找到移动IP：{ip}")
-
-                TG_MESSAGE.append(
-                    f"📡 移动：{ip}🚀 带宽：{bw}Mbps"
-                )
 
             if all(result.values()):
                 break
