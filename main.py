@@ -55,9 +55,13 @@ HEADERS = {
 def send_tg():
 
     if not TG_BOT_TOKEN or not TG_CHAT_ID:
+        print("TG配置缺失")
         return
 
     message = "\n".join(TG_MESSAGE)
+
+    print("准备发送TG:")
+    print(message)
 
     url = (
         f"https://api.telegram.org/"
@@ -70,13 +74,18 @@ def send_tg():
     }
 
     try:
-        requests.post(
+
+        r = requests.post(
             url,
             data=data,
             timeout=10
         )
 
+        print("TG返回:")
+        print(r.text)
+
     except Exception as e:
+
         print("TG发送失败:", e)
 
 # =========================
@@ -279,13 +288,26 @@ def main():
 
     print("全部更新完成！")
 
-    TG_MESSAGE.insert(
-        0,
-        "🚀 电信、移动、联通DNS自动更新结果\n"
-    )
     
-    send_tg()
-
-
 if __name__ == "__main__":
-    main()
+
+    try:
+
+        main()
+
+        TG_MESSAGE.insert(
+            0,
+            "🚀 DNS IP自动更新结果\n"
+        )
+
+
+    except Exception as e:
+
+        TG_MESSAGE.append(
+            f"❌运行失败\n{e}"
+        )
+
+
+    finally:
+
+        send_tg()
