@@ -189,7 +189,19 @@ def parse_ip(html):
                         f"带宽：{bw}Mbps"
                     )
             
-                    continue
+                    result["电信"] = "SKIP"
+                else:
+
+                    result["电信"] = ip
+            
+                    print(
+                        f"找到电信IP：{ip} 带宽：{bw}Mbps"
+                    )
+            
+                    TG_MESSAGE.append(
+                        f"📡 电信：{ip}\n"
+                        f"🚀 带宽：{bw}Mbps"
+                    )
                 result["电信"] = ip
                 bandwidth["电信"] = bw
                 print(f"找到电信IP：{ip}")
@@ -211,7 +223,19 @@ def parse_ip(html):
                         f"带宽：{bw}Mbps"
                     )
             
-                    continue
+                    result["联通"] = "SKIP"
+                else:
+
+                    result["联通"] = ip
+            
+                    print(
+                        f"找到联通IP：{ip} 带宽：{bw}Mbps"
+                    )
+            
+                    TG_MESSAGE.append(
+                        f"📡 联通：{ip}\n"
+                        f"🚀 带宽：{bw}Mbps"
+                    )
             
                 result["联通"] = ip
                 bandwidth["联通"] = bw
@@ -235,7 +259,19 @@ def parse_ip(html):
                         f"带宽：{bw}Mbps"
                     )
             
-                    continue
+                    result["移动"] = "SKIP"
+                else:
+
+                    result["移动"] = ip
+            
+                    print(
+                        f"找到移动IP：{ip} 带宽：{bw}Mbps"
+                    )
+            
+                    TG_MESSAGE.append(
+                        f"📡 移动：{ip}\n"
+                        f"🚀 带宽：{bw}Mbps"
+                    )
             
                 result["移动"] = ip
                 bandwidth["移动"] = bw
@@ -338,7 +374,7 @@ def main():
 
     for isp, ip in result.items():
     
-        if ip:
+        if ip and ip != "SKIP":
     
             update_dns(
                 DNS_RECORDS[isp],
